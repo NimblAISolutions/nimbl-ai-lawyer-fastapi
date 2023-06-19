@@ -1,0 +1,3 @@
+{
+    "answer_by_context": "Using context provided below answer the user question. Context:\n{context}\nQuestion: {question}"
+}
