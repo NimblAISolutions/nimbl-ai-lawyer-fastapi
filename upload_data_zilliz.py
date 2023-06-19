@@ -2,7 +2,6 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Milvus
 from langchain.document_loaders import PyPDFLoader
-from langchain.prompts import PromptTemplate
 # OS
 import os
 # ENV
@@ -18,22 +17,25 @@ ZILLIZ_CLOUD_URI = os.environ.get("ZILLIZ_CLOUD_URI")
 ZILLIZ_CLOUD_USERNAME = os.environ.get("ZILLIZ_CLOUD_USERNAME")
 ZILLIZ_CLOUD_PASSWORD = os.environ.get("ZILLIZ_CLOUD_PASSWORD")
 
-def upload_data_from_url(path, collection_name):
+
+def upload_pdf_from_url(path, coll_name):
+    # MILVUS
+    database = Milvus(
+        embedding_function=embeddings, 
+        collection_name=coll_name, 
+        connection_args={
+        "uri": ZILLIZ_CLOUD_URI,
+        "user": ZILLIZ_CLOUD_USERNAME,
+        "password": ZILLIZ_CLOUD_PASSWORD,
+        "secure": True,
+    })
+
 
     loader = PyPDFLoader(path)
     document = loader.load()
     docs = text_splitter.split_documents(document)
-
-
-    Milvus.add_documents(
-        docs,
-        embedding=embeddings,
-        collection_name=collection_name,
-        connection_args={
-            "uri": ZILLIZ_CLOUD_URI,
-            "user": ZILLIZ_CLOUD_USERNAME,
-            "password": ZILLIZ_CLOUD_PASSWORD,
-            "secure": True,
-        }
+    
+    database.add_documents(
+        documents=docs
     )
 

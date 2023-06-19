@@ -155,7 +155,6 @@ cython_debug/
 # VSCode
 .vscode/
 
-testing_zilliz.py
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
