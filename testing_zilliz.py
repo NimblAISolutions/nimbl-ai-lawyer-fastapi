@@ -8,7 +8,7 @@ from langchain.prompts import PromptTemplate
 # SYSTEM
 import os
 # CUSTOM
-from load_prompts import get_prompts
+from utils.load_prompts import get_prompts
 # ENV
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
