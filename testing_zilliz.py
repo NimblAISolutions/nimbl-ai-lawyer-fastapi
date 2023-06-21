@@ -1,9 +1,7 @@
 # LANGCHAIN
 from langchain.llms import OpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import Milvus
-from langchain.document_loaders import PyPDFLoader
 from langchain.prompts import PromptTemplate
 # SYSTEM
 import os
@@ -21,12 +19,12 @@ ZILLIZ_CLOUD_PASSWORD = os.environ.get("ZILLIZ_CLOUD_PASSWORD")
 
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002")
 llm = OpenAI()
-print(llm.model_name)
+print("Model: " + llm.model_name)
 
-
+coll = input("Collection name: ")
 database = Milvus(
     embedding_function=embeddings, 
-    collection_name="LangChainCollection", 
+    collection_name=coll, 
     connection_args={
         "uri": ZILLIZ_CLOUD_URI,
         "user": ZILLIZ_CLOUD_USERNAME,
@@ -45,4 +43,4 @@ AI_answer = llm(
 )
 print(AI_answer)
 
-print("\n\n\n\n"+context)
+print("\n\n\n\n" + context)
