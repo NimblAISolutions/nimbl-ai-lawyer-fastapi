@@ -26,7 +26,7 @@ print(llm.model_name)
 
 database = Milvus(
     embedding_function=embeddings, 
-    collection_name="afsaindextest", 
+    collection_name="LangChainCollection", 
     connection_args={
         "uri": ZILLIZ_CLOUD_URI,
         "user": ZILLIZ_CLOUD_USERNAME,
