@@ -1,22 +1,23 @@
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import OnlinePDFLoader, WebBaseLoader, UnstructuredURLLoader, CSVLoader
 from langchain.vectorstores import Milvus
 import config
 
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 
 # Подходит для тела сайтов
 def upload_web_from_url(path):
     loader = WebBaseLoader(path)
-    documents = loader.load_and_split()
+    documents = loader.load()
+    docs = text_splitter.split_documents(documents)
 
-    return documents
+    return docs
 
 # Для всего всего загружающегося
 def upload_url(url):
     try:
-        text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
         loader = UnstructuredURLLoader(urls=[url])
-        data = loader.load_and_split()
+        data = loader.load()
         docs = text_splitter.split_documents(data)
     except Exception as e:
         return "Error: " + e

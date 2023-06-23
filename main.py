@@ -22,17 +22,3 @@ async def upload_zilliz(path: str, collection_name: str="unnamedcollection"):
     
     return result
 
-
-
-
-@app.post("/file_uploader")
-async def upload_zilliz(file: UploadFile, collection_name: str="unnamedcollection"):
-    
-    print(file.file)
-
-    # result = await loaders.base_loader(path, collection_name, format)
-    # if result.get("status") == "error":
-    #     raise HTTPException(400, detail=result)
-    
-    # return result
-
