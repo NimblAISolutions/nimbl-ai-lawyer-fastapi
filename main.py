@@ -3,10 +3,28 @@ from uploads import loaders
 from utils.url_checker import url_checker
 from utils.get_context import get_context_from_milvus
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 UPLOADED_DIR = os.path.join(BASE_DIR, "uploaded_files")
+
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:3002",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.post("/upload_zilliz")
