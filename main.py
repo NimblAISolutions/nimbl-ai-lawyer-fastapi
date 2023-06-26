@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException, UploadFile
+from fastapi import FastAPI, HTTPException
 from uploads import loaders
 from utils.url_checker import url_checker
+from utils.get_context import get_context_from_milvus
 import os
 
 app = FastAPI()
@@ -22,3 +23,10 @@ async def upload_zilliz(path: str, collection_name: str="unnamedcollection"):
     
     return result
 
+
+@app.post("/get_context")
+async def get_context(message: str):
+
+    result = get_context_from_milvus(message)
+
+    return result
