@@ -24,7 +24,7 @@ async def upload_zilliz(path: str, collection_name: str="unnamedcollection"):
     return result
 
 
-@app.post("/get_context")
+@app.get("/get_context")
 async def get_context(message: str):
 
     result = get_context_from_milvus(message)
