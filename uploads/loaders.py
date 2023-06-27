@@ -1,30 +1,32 @@
-from langchain.document_loaders import WebBaseLoader
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.document_loaders import OnlinePDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.document_loaders import OnlinePDFLoader, WebBaseLoader, UnstructuredURLLoader, CSVLoader
 from langchain.vectorstores import Milvus
-from all_types import Formats
 import config
 
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 
-# Подходит для сайтов, online csv, json
+# Подходит для тела сайтов
 def upload_web_from_url(path):
     loader = WebBaseLoader(path)
-    documents = loader.load_and_split()
-
-    return documents
-
-
-def upload_pdf_from_url(path):
-    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-    loader = OnlinePDFLoader(path)
-    document = loader.load()
-    docs = text_splitter.split_documents(document)
+    documents = loader.load()
+    docs = text_splitter.split_documents(documents)
 
     return docs
 
+# Для всего всего загружающегося
+def upload_url(url):
+    try:
+        loader = UnstructuredURLLoader(urls=[url])
+        data = loader.load()
+        docs = text_splitter.split_documents(data)
+    except Exception as e:
+        return "Error: " + e
 
-async def base_loader(path: str, collection_name: str, format: Formats):
-    val = format.value
+    return docs
+ 
+
+
+async def base_loader(path: str, collection_name: str):
     database = Milvus(
         embedding_function=config.embeddings,
         collection_name=collection_name,
@@ -35,28 +37,21 @@ async def base_loader(path: str, collection_name: str, format: Formats):
             "secure": True,
         }
     )
-
-    if val in (Formats.CSV, Formats.JSON, Formats.SITE):
-        documents = upload_web_from_url(path)
-
-    # elif val in (Formats.XLS, Formats.XLSX):
-    #     pass
     
-    # elif val in (Formats.DOC, Formats.DOCX):
-    #     pass
-    
-    elif val is Formats.PDF:
-        documents=upload_pdf_from_url(path)
+    documents = upload_url(path)
 
-    else:
-        return {"info": "File format not added now", "status": "error"}
+    if len(documents) < 1:
+        try:
+            documents = upload_web_from_url(path)
+        except:
+            return {"info": "Error corrupted", "error": "Erorr while uploading file", "status": "error"}
     
     try:
         database.add_documents(
             documents=documents,
         )
     except Exception as E:
-        return {"info": "Error corrupted", "error": E, "status": "error"}
+        return {"info": "Error corrupted", "error": str(E), "status": "error"}
     
     return  {"info": "File uploaded successfully", "status":"ok"}
 
