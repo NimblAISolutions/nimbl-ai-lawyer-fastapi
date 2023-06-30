@@ -26,5 +26,5 @@ database = Milvus(
 compressor = LLMChainExtractor.from_llm(llm)
 compression_retriever = ContextualCompressionRetriever(base_compressor=compressor, base_retriever=database.as_retriever())
 
-def get_context_from_milvus(message: str):
-    return compression_retriever.get_relevant_documents(message)
+async def get_context_from_milvus(message: str):
+    return await compression_retriever.aget_relevant_documents(message)
