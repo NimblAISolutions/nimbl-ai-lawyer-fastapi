@@ -11,11 +11,11 @@ ZILLIZ_CLOUD_PASSWORD = os.environ.get("ZILLIZ_CLOUD_PASSWORD")
 
 
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002")
-llm = OpenAI(temperature=0)
+# llm = OpenAI(temperature=0)
 
 database = Milvus(
     embedding_function=embeddings,
-    collection_name="afsaindextest",
+    collection_name="egovkz",
     connection_args={
         "uri": ZILLIZ_CLOUD_URI,
         "user": ZILLIZ_CLOUD_USERNAME,
@@ -23,8 +23,9 @@ database = Milvus(
         "secure": True,
     }
 )
-compressor = LLMChainExtractor.from_llm(llm)
-compression_retriever = ContextualCompressionRetriever(base_compressor=compressor, base_retriever=database.as_retriever())
+# compressor = LLMChainExtractor.from_llm(llm)
+# compression_retriever = ContextualCompressionRetriever(base_compressor=compressor, base_retriever=database.as_retriever())
 
 async def get_context_from_milvus(message: str):
-    return await compression_retriever.aget_relevant_documents(message)
+    # return await compression_retriever.aget_relevant_documents(message)
+    return database.similarity_search(message, k=2)[0]
