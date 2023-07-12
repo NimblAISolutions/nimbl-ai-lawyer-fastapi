@@ -23,9 +23,14 @@ database = Milvus(
         "secure": True,
     }
 )
-# compressor = LLMChainExtractor.from_llm(llm)
-# compression_retriever = ContextualCompressionRetriever(base_compressor=compressor, base_retriever=database.as_retriever())
 
 async def get_context_from_milvus(message: str):
+
+    llm = OpenAI(temperature=1.0)
+    contexts = llm.predict(
+        f"Вы помощник языковой модели ИИ. Ваша задача состоит в том, чтобы сгенерировать 2 разные версии данного вопроса пользователя, чтобы получить соответствующие документы из векторной базы данных. Создавая несколько точек зрения на вопрос пользователя, ваша цель — помочь пользователю преодолеть некоторые ограничения поиска сходства на основе расстояния. Оригинальный вопрос: {message} ответ должен быть в формате: 1.оригинальный вопрос 2. 1 версия 3. 2 версия")
+    print(contexts)
+    context = database.similarity_search(contexts, k=3)
+    # print(context[0:3])
     # return await compression_retriever.aget_relevant_documents(message)
-    return database.similarity_search(message, k=2)[0]
+    return context[0:3]
