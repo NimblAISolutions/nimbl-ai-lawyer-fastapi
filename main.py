@@ -1,9 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from uploads import loaders
 from utils.url_checker import url_checker
-from utils.get_context import get_context_from_milvus
+from utils.get_context import get_context_from_milvus, get_context_from_db
 import os
 from fastapi.middleware.cors import CORSMiddleware
+from custom_types import Sources
 
 app = FastAPI()
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -43,8 +44,8 @@ async def upload_zilliz(path: str, collection_name: str="unnamedcollection"):
 
 
 @app.get("/get_context")
-async def get_context(message: str):
+async def get_context(message: str, source: Sources):
 
-    result = await get_context_from_milvus(message)
+    result = await get_context_from_db(message, source)
 
     return result
