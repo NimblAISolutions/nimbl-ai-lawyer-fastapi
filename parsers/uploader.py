@@ -8,13 +8,17 @@ import os
 from enum import Enum
 from colorama import Fore, Style
 
-
-OPENAI_API_KEY = ""
-DATA_PATH = r""
+OPENAI_API_KEY=""
 ZILLIZ_CLOUD_URI = ""
 ZILLIZ_CLOUD_USERNAME = ""
 ZILLIZ_CLOUD_PASSWORD = ""
 ZILLIZ_CLOUD_COLLECTION = ""
+DATA_PATH = r"C:\Users\Maximus\Desktop\working\parsers\parsed_data"
+OPENAI_API_KEY = "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"
+ZILLIZ_CLOUD_URI = "https://in01-5c83064561b8fa7.aws-us-west-2.vectordb.zillizcloud.com:19533"
+ZILLIZ_CLOUD_USERNAME = "db_admin"
+ZILLIZ_CLOUD_PASSWORD = "urVcsBEaw7ZYvsf"
+ZILLIZ_CLOUD_COLLECTION = "egovkz_all_services_small"
 PINECONE_API_KEY = ""
 PINECONE_ENVIRONMENT = ""
 PINECONE_INDEX = ""
@@ -97,6 +101,7 @@ def custom_loader(directory_path: str, source):
                     final[i].metadata["source"] = content
 
                 try:
+                    print(final)
                     DB.add_documents(final)
                     log(LogStatuses.SUCCESS, folder_path3 + " loaded")
                     with open(folder_path3 + "/success.txt", "w", encoding="utf-8") as f:
@@ -129,6 +134,6 @@ def success_remover(directory_path: str):
 
 
 # success_remover(DATA_PATH) # removes all success marks within folders
-# custom_loader(DATA_PATH, "zilliz")
+custom_loader(DATA_PATH, "zilliz")
 # custom_loader(DATA_PATH, "pinecone")
 

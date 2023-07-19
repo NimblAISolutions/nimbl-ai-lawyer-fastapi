@@ -41,7 +41,7 @@ def parse_html(path: str, source: str):
     return ''.join([i.page_content for i in data])
 
 
-def open_page_and_parse(url: str):
+def open_page_and_parse(url: str, class_ = "content"):
     driver.get(url)
 
     service, category, subcategory = url.split("/")[-3: ]
@@ -55,7 +55,7 @@ def open_page_and_parse(url: str):
     if not isExist:
         os.makedirs(f"./{BASE_PATH}")
 
-    content_bs = bs(driver.page_source, 'html.parser').find('div', {"class": "content"})
+    content_bs = bs(driver.page_source, 'html.parser').find('div', {"class": class_})
     for unsued_element in content_bs.find_all(attrs={"class": "hidden-print"}):
         unsued_element.decompose()
 
@@ -66,25 +66,30 @@ def open_page_and_parse(url: str):
     with open(RAW_HTML_PATH, "w", encoding="utf-8") as f:
         f.write(str(content_bs))
     parsed_html = parse_html(RAW_HTML_PATH, url)
-    
+    parsed_html = str(parsed_html).replace("\n\n", "\n")
+
     with open(PARSED_TXT_PATH, "w", encoding="utf-8") as f:
-        f.write(str(parsed_html))
+        f.write(parsed_html)
         
     return parsed_html
 
 
 def parser_wrapper(path: str):
     try:
-        documents = open_page_and_parse(path)
+        if "pki.gov" in path:
+            documents = open_page_and_parse(path, "section")
+        else:
+            documents = open_page_and_parse(path)
+
         if len(documents) < 1:
             log(Statuses.ERROR, path + " No content!")
-
         log(Statuses.SUCCESS, path + " loaded")
 
     except Exception as e:
         log(Statuses.ERROR, str(e))
 
 
+# Useful tool to extract all links within object
 def extract_links_from_a(tag, egov_url = "https://egov.kz"):
     links = []
     for link in tag.find_all('a', {"rel": "noopener noreferrer"}):
@@ -123,28 +128,33 @@ def services_list_parser():
     for category in categories:
         links.append(*extract_links_from_a(category, egov_url))
 
-
     for link in links:
         parser_wrapper(link)    
 
 
+# Return all links from instructions table
+def get_links_from_instructions():
+    driver.get("https://egov.kz/cms/ru/information/help/instrukcii")
+    soup = bs(driver.page_source)
+    table = soup.find("table")
+    return extract_links_from_a(table, "")
+
+
 def main():
 
-    services_list_parser()
-
     # List of urls for Unstructed parse
-    # urls = [
-    #     "https://egov.kz/cms/ru/online-services/for_citizen/pass_sr18"
-    # ]
+    urls = get_links_from_instructions()
     # Engine for list of urls
-    # for url in urls:
-    #     log(Statuses.INFO, url + " parsing...")
-    #     parser_wrapper(url)
-    #     log(Statuses.INFO, url + " parsed!")
-    #     print()
+    for url in urls:
+        log(Statuses.INFO, url + " parsing...")
+        parser_wrapper(url)
+        log(Statuses.INFO, url + " parsed!")
+        print()
 
     driver.close()
     log(Statuses.SUCCESS, "+="*3 + "FINISH" + "=+"*3)
 
 
-load_from_home_page()
+# load_from_home_page()
+# services_list_parser()
+main()
