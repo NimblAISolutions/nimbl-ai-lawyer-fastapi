@@ -3,9 +3,6 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 import pinecone
 import os
 from custom_types import Sources
-# from langchain.llms import OpenAI
-# from langchain.retrievers import ContextualCompressionRetriever
-# from langchain.retrievers.document_compressors import LLMChainExtractor
 
 ZILLIZ_CLOUD_URI = os.environ.get("ZILLIZ_CLOUD_URI")
 ZILLIZ_CLOUD_USERNAME = os.environ.get("ZILLIZ_CLOUD_USERNAME")
@@ -18,7 +15,6 @@ PINECONE_INDEX_LARGE = os.environ.get("PINECONE_INDEX_LARGE")
 PINECONE_INDEX_SMALL = os.environ.get("PINECONE_INDEX_SMALL")
 
 embeddings = OpenAIEmbeddings(model="text-embedding-ada-002")
-# llm = OpenAI(temperature=1.0)
 
 database_milvus_large = Milvus(
     embedding_function=embeddings,
@@ -63,15 +59,21 @@ def get_database_pinecone(type: Sources):
     return Pinecone(embedding_function=embeddings.embed_query, index=index, text_key="some")
 
 
-async def get_context_from_milvus(message: str):
+async def get_context_from_milvus(message: str, collection_name: str):
 
-    # llm = OpenAI(temperature=1.0)
-    # contexts = llm.predict(
-    #     f"Вы помощник языковой модели ИИ. Ваша задача состоит в том, чтобы сгенерировать 2 разные версии данного вопроса пользователя, чтобы получить соответствующие документы из векторной базы данных. Создавая несколько точек зрения на вопрос пользователя, ваша цель — помочь пользователю преодолеть некоторые ограничения поиска сходства на основе расстояния. Оригинальный вопрос: {message} ответ должен быть в формате: 1.оригинальный вопрос 2. 1 версия 3. 2 версия")
-    # print(contexts)
-    context = database_milvus_large.similarity_search(message, k=5)
-    print(context[0:5])
-    # return await compression_retriever.aget_relevant_documents(message)
+    db = Milvus(
+        embedding_function=embeddings,
+        collection_name=collection_name,
+        connection_args={
+            "uri": ZILLIZ_CLOUD_URI,
+            "user": ZILLIZ_CLOUD_USERNAME,
+            "password": ZILLIZ_CLOUD_PASSWORD,
+            "secure": True,
+        }
+    )
+
+    context = await db.asimilarity_search(message, k=5)
+
     return context[:5]
 
 
