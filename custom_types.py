@@ -10,3 +10,5 @@ class Sources(str, Enum):
     zilliz_small = "zilliz_small"
     # 5k chunk size, 1k overlap
     zilliz_large = "zilliz_large"
+
+    zilliz_laws = "zilliz_laws"

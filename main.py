@@ -51,9 +51,9 @@ async def get_context_sources(message: str, source: Sources):
     return result
 
 
-@app.get("/get_context")
-async def get_context(message: str):
+# @app.get("/get_context")
+# async def get_context(message: str):
 
-    result = await get_context_from_milvus(message, laws)
+#     result = await get_context_from_milvus(message, laws)
 
-    return result
+#     return result
