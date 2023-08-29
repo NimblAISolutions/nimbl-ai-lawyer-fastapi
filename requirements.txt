@@ -8,4 +8,5 @@ selenium==4.11.2
 uvicorn
 pymilvus
 openai
+tiktoken
 
