@@ -1,7 +1,7 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import OnlinePDFLoader, WebBaseLoader, UnstructuredURLLoader, CSVLoader
 from langchain.vectorstores import Milvus
-import config
+import myconfig as config
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
 
