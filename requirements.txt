@@ -9,4 +9,3 @@ uvicorn
 pymilvus
 openai
 tiktoken
-
